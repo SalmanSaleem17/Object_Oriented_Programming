@@ -7,40 +7,43 @@ class ChatApp {
         this.users = new ArrayList<User>();
     }
 
-    private User findUser(String userName) {
+    private User findUserByContact(long contactNumber) {
         for (User user : users) {
-            if (user.getUserName().equals(userName)) {
+            if (user.getContactNumber() == contactNumber) {
                 return user;
             }
         }
         return null;
     }
 
-    public void addUser(String userName) {
-        users.add(new User(userName));
+    public void addUser(String userName, long contactNumber) {
+        if (findUserByContact(contactNumber) == null) {
+            users.add(new User(userName, contactNumber));
+        } else {
+            System.out.println("A user with this contact number already exists!");
+        }
     }
 
-    public void sendMessage(String senderName, String receiverName, String messageContent) {
-        User sender = findUser(senderName);
+    public void sendMessage(long senderContact, long receiverContact, String messageContent) {
+        User sender = findUserByContact(senderContact);
+        User receiver = findUserByContact(receiverContact);
+
         if (sender == null) {
-            addUser(senderName);
-            sender = findUser(senderName);
+            System.out.println("Sender not found!");
+            return;
         }
-
-        User receiver = findUser(receiverName);
         if (receiver == null) {
-            addUser(receiverName);
-            receiver = findUser(receiverName);
+            System.out.println("Receiver not found!");
+            return;
         }
 
-        Message message = new Message(senderName, receiverName, messageContent);
-
+        Message message = new Message(sender.getUserName(), receiver.getUserName(), messageContent);
         sender.addMessage(message);
         receiver.addMessage(message);
     }
 
-    public void displayUserMessages(String userName) {
-        User user = findUser(userName);
+    public void displayUserMessages(long contactNumber) {
+        User user = findUserByContact(contactNumber);
         if (user != null) {
             user.displayMessages();
         } else {

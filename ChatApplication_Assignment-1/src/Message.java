@@ -41,6 +41,11 @@ class Message {
         return dateTime;
     }
 
+    public String toString() {
+        return "MessageID: " + messageID + ", From: " + sender + ", To: " + receiver +
+                ", Content: \"" + messageContent + "\", Sent at: " + dateTime;
+    }
+
     public void displayMessage() {
         System.out.println("-------------------------------");
         System.out.println("MessageID: " + messageID);
@@ -56,3 +61,5 @@ class Message {
         return formatter.format(date);
     }
 }
+
+

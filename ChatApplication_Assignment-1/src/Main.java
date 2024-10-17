@@ -7,11 +7,13 @@ public class Main {
         boolean exit = false;
 
         // Pre-existing users and messages
-        chatApp.sendMessage("Alice", "Bob", "Hello Bob!");
-        chatApp.sendMessage("Bob", "Alice", "Hi Alice, how are you?");
-        chatApp.sendMessage("Alice", "Charlie", "Hey Charlie!");
-        chatApp.sendMessage("Charlie", "Alice", "Hey Alice, what's up?");
-        chatApp.sendMessage("Bob", "Charlie", "Hey Charlie, long time!");
+        chatApp.addUser("Alice", 12345678901L);
+        chatApp.addUser("Bob", 12345678902L);
+        chatApp.addUser("Charlie", 12345678903L);
+
+        chatApp.sendMessage(12345678901L, 12345678902L, "Hello Bob!");
+        chatApp.sendMessage(12345678902L, 12345678901L, "Hi Alice, how are you?");
+        chatApp.sendMessage(12345678901L, 12345678903L, "Hey Charlie!");
 
         // Main loop
         while (!exit) {
@@ -58,8 +60,8 @@ public class Main {
             System.out.println("No users available.");
         } else {
             System.out.println("Available users:");
-            for (int i = 0; i < chatApp.getUsers().size(); i++) {
-                System.out.println((i + 1) + ". " + chatApp.getUsers().get(i).getUserName());
+            for (User user : chatApp.getUsers()) {
+                System.out.println("User: " + user.getUserName() + ", Contact: " + user.getContactNumber());
             }
         }
     }
@@ -67,50 +69,43 @@ public class Main {
     private static void sendMessage(ChatApp chatApp, Scanner scanner) {
         displayUsers(chatApp);
 
-        System.out.println("Would you like to add a new user to send a message to? (yes/no)");
+        System.out.print("Would you like to add a new user to send a message to? (yes/no) : ");
         String response = scanner.nextLine().trim().toLowerCase();
 
-        String receiverName;
-
+        long receiverContact;
         if (response.equals("yes")) {
-            System.out.print("Enter the new Receiver's name: ");
-            receiverName = scanner.nextLine();
-            chatApp.addUser(receiverName);
-        } else {
-            System.out.print("Enter the number of the user to send a message to: ");
-            int userNumber = scanner.nextInt();
+            System.out.print("Enter the new Sender's name: ");
+            String receiverName = scanner.nextLine();
+
+            System.out.print("Enter the new Receiver's 11-digit contact number: ");
+            receiverContact = scanner.nextLong();
             scanner.nextLine();
 
-            if (userNumber <= 0 || userNumber > chatApp.getUsers().size()) {
-                System.out.println("Invalid user number!");
-                return;
-            }
-
-            receiverName = chatApp.getUsers().get(userNumber - 1).getUserName();
+            chatApp.addUser(receiverName, receiverContact);
+        } else {
+            System.out.print("Enter the 11-digit contact number of the Sender to send a message to: ");
+            receiverContact = scanner.nextLong();
+            scanner.nextLine();
         }
 
-        System.out.print("Enter the sender's name: ");
-        String senderName = scanner.nextLine();
+        System.out.print("Enter your 11-digit contact number: ");
+        long senderContact = scanner.nextLong();
+        scanner.nextLine();
 
         System.out.print("Enter the message content: ");
         String messageContent = scanner.nextLine();
 
-        chatApp.sendMessage(senderName, receiverName, messageContent);
-        System.out.println("Message sent from " + senderName + " to " + receiverName);
+        chatApp.sendMessage(senderContact, receiverContact, messageContent);
+        System.out.println("Message sent!");
     }
 
     private static void viewUserMessages(ChatApp chatApp, Scanner scanner) {
         displayUsers(chatApp);
 
-        System.out.print("Enter the number of the user to view messages: ");
-        int userNumber = scanner.nextInt();
+        System.out.print("Enter the 11-digit contact number of the user to view messages: ");
+        long contactNumber = scanner.nextLong();
         scanner.nextLine();
 
-        if (userNumber <= 0 || userNumber > chatApp.getUsers().size()) {
-            System.out.println("Invalid user number!");
-        } else {
-            String userName = chatApp.getUsers().get(userNumber - 1).getUserName();
-            chatApp.displayUserMessages(userName);
-        }
+        chatApp.displayUserMessages(contactNumber);
     }
 }
